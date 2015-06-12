@@ -1,0 +1,176 @@
+### Challenge Description
+There exists a service, a ServiceA that stores user information. A sample of the return from this 
+service might look like this:
+```json
+{
+  "count": 1,
+  "users": [
+    {
+      "gender": "male",
+      "name": {
+        "title": "Mr",
+        "first": "Henry",
+        "last": "Howard"
+      },
+      "location": {
+        "street": "3258 Thornridge Cir",
+        "city": "Frederick",
+        "state": "Texas",
+        "zip": "17354"
+      },
+      "email": "henry.howard66@example.com",
+      "username": "tinyleopard307",
+      "registered": "2013-10-16 18:48:56 -0500",
+      "dob": "1973-06-20 21:28:17 -0500",
+      "phone": "(458)-811-9202",
+      "cell": "(880)-850-2345",
+      "picture": {
+        "large": "http://api.randomuser.me/portraits/men/95.jpg",
+        "medium": "http://api.randomuser.me/portraits/med/men/95.jpg",
+        "thumbnail": "http://api.randomuser.me/portraits/thumb/men/95.jpg"
+      },
+      "ssn": "254-96-7952"
+    }
+  ]
+}
+```
+
+This data is fine for how it’s stored on the ServiceA, but ServiceB expects user data in a different format.
+```json
+{
+  "address": "3258 Thornridge Cir\nFrederick, Texas  17354",
+  "date_of_birth": "Wednesday June 20, 1973",
+  "email": "henry.howard66@example.com",
+  "fullname": "Mr. Henry Howard",
+  "gender": "M",
+  "phone": "(880)-850-2345",
+  "username": "tinyleopard307"
+}
+```
+Some data has been merged, some data has been copied and other data has been mapped. 
+These different types of transformations, when applied to the source object, should result in the target object here.
+Your program should receive JSON input from ServiceA and spit out a JSON array of objects ready for ServiceB. 
+
+### Challenge Requirements
+The program must be written in Go (http://golang.org) and executable.
+Your program should leverage goroutines efficiently.
+Transformations should be written to be as generic as possible. For example, a definition for a copy transformation might look something like this:
+type CopyTransform struct {
+        From, To string
+}
+cpy := CopyTransform{"username", "username"}
+The exact way to achieve this is up to you (feel free to start with the above sample and fill in the rest, or build your own solution.
+
+var source = someObject...
+var dest = someOtherObject...
+
+source.username = dest.username
+
+Note by GeertJohan: It's __extremely__ inefficient to write metadata around a copy. A copy of a value is a very simple operation, and can be described easily with normal Go syntax. Anything else to describe a copy and execute it based on field names as strings (which requires runtime reflection) is always slower and less maintainable.
+
+### Input
+Your program will receive, as input, a filename that points to a file containing the “source” 
+JSON, it should read this JSON in and perform the necessary transformations.
+### Output
+Your program should output (via stdout) a JSON Array containing all the records after the transformations have been applied to them.
+
+
+#### Transformation types
+Gender should map (or translate) from “male” or “female” to “M” or “F” (respectively).
+There are 4 types of potential transformations that are taking place here. 
+- Copy: move the value from field A to B unchanged
+- Merge: take multiple input fields and produce a single output field
+- DateCopy: similar to copy, but potentially including a source and target format
+- Map: a.k.a. ‘translate,’ basically convert a value in the source field to another value 
+based on a table of mappings
+
+We suggest using the following packages: encoding/json, fmt, os, time, strings.
+
+
+### JSON example data
+Extended ServiceA JSON Sample
+```json
+{
+  "count": 3,
+  "users": [
+    {
+      "gender": "male",
+      "name": {
+        "title": "Mr",
+        "first": "Henry",
+        "last": "Howard"
+      },
+      "location": {
+        "street": "3258 Thornridge Cir",
+        "city": "Frederick",
+        "state": "Texas",
+        "zip": "17354"
+      },
+      "email": "henry.howard66@example.com",
+      "username": "tinyleopard307",
+      "registered": "2013-10-16 18:48:56 -0500",
+      "dob": "1973-06-20 21:28:17 -0500",
+      "phone": "(458)-811-9202",
+      "cell": "(880)-850-2345",
+      "picture": {
+        "large": "http://api.randomuser.me/portraits/men/95.jpg",
+        "medium": "http://api.randomuser.me/portraits/med/men/95.jpg",
+        "thumbnail": "http://api.randomuser.me/portraits/thumb/men/95.jpg"
+      },
+      "ssn": "254-96-7952"
+    },
+    {
+      "gender": "female",
+      "name": {
+        "title": "Miss",
+        "first": "Georgia",
+        "last": "Hill"
+      },
+      "location": {
+        "street": "3703 Oak Ridge Ln",
+        "city": "Greeley",
+        "state": "New Jersey",
+        "zip": "46961"
+      },
+	"email": "georgia.hill35@example.com",
+      "username": "bluesnake932",
+      "registered": "2014-07-30 19:06:40 -0500",
+      "dob": "1978-11-14 05:48:08 -0600",
+      "phone": "(100)-291-8295",
+      "cell": "(262)-805-5198",
+      "picture": {
+        "large": "http://api.randomuser.me/portraits/women/15.jpg",
+        "medium": "http://api.randomuser.me/portraits/med/women/15.jpg",
+        "thumbnail": "http://api.randomuser.me/portraits/thumb/women/15.jpg"
+      },
+      "ssn": "483-40-6904"
+    },
+    {
+      "gender": "female",
+      "name": {
+        "title": "Mrs",
+        "first": "Amy",
+        "last": "Meyer"
+      },
+      "location": {
+        "street": "7628 Northaven Rd",
+        "city": "Desoto",
+        "state": "Iowa",
+        "zip": "81255"
+      },
+      "email": "amy.meyer50@example.com",
+      "username": "silverbird585",
+      "registered": "2000-03-12 10:23:57 -0600",
+      "dob": "1985-04-26 17:46:02 -0600",
+      "phone": "(999)-605-6744",
+      "cell": "(446)-598-8406",
+      "picture": {
+        "large": "http://api.randomuser.me/portraits/women/30.jpg",
+        "medium": "http://api.randomuser.me/portraits/med/women/30.jpg",
+        "thumbnail": "http://api.randomuser.me/portraits/thumb/women/30.jpg"
+      },
+      "ssn": "674-16-1687"
+    }
+  ]
+}
+```
