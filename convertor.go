@@ -20,6 +20,7 @@ func Convert(s *SourceData) (TargetData, error) {
 	for _, sourceUser := range s.Users {
 		targetUser := TargetDataUser{
 			//sprint method is fast and confusing
+			// '' skips what does not need to be converted 
 			Address:  fmt.Sprintf("%s\n%s %s %s", sourceUser.Location.Street, sourceUser.Location.City, sourceUser.Location.State, sourceUser.Location.Zip),
 			Email:    ``,
 			Fullname: ``,
