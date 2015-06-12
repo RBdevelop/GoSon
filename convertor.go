@@ -14,19 +14,20 @@ var (
 //converting all others 
 
 func Convert(s *SourceData) (TargetData, error) {
-	// pre-allocate for len(s.Users)
+	// allocate for len(s.Users) https://blog.golang.org/slices
 	t := make(TargetData, 0, len(s.Users))
+
+// '' skips what does not need to be converted 
 
 	for _, sourceUser := range s.Users {
 		targetUser := TargetDataUser{
-			//sprint method is fast and confusing
-			// '' skips what does not need to be converted 
+			//sprintf method  formats string without printing  
 			Address:  fmt.Sprintf("%s\n%s %s %s", sourceUser.Location.Street, sourceUser.Location.City, sourceUser.Location.State, sourceUser.Location.Zip),
-			Email:    ``,
-			Fullname: ``,
+			Email:    sourceUser.Email,
+			Fullname: fmt.Sprintf("%s %s %s", sourceUser.Name.Title, sourceUser.Name.First, sourceUser.Name.Last),
 			Gender:   genderMapping[sourceUser.Gender],
 			Phone:    sourceUser.Cell,
-			Username: ``,
+			Username: sourceUser.Username,
 		}
 		dob, err := time.Parse("2006-01-02 15:04:05 -0700", sourceUser.DateOfBirth)
 		if err != nil {
